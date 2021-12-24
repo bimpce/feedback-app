@@ -1,31 +1,37 @@
-function App() {
-	const title = 'Blog post';
-	const body = 'This is my blog post';
-	const comments = [
-		{ id: 1, text: 'commnet 1' },
-		{ id: 2, text: 'commnet 2' },
-		{ id: 3, text: 'commnet 3' },
-	];
+import { v4 as uuidv4 } from 'uuid';
+import { useState } from 'react';
+import Header from './components/Header';
+import FeedbackList from './components/FeedbackList';
+import FeedbackStats from './components/FeedbackStats';
+import FeedbackForm from './components/FeedbackForm';
+import FeedbackData from './data/FeedbackData';
 
-	const loading = false;
-	const showComments = true;
-	if (loading) return <h1>Loading...</h1>;
+function App() {
+	const [feedback, setFeedback] = useState(FeedbackData);
+
+	const deleteFeedback = (id) => {
+		if (window.confirm('Are you sure you want to delete?')) {
+			setFeedback(feedback.filter((item) => item.id !== id));
+		}
+	};
+
+	const addFeedback = (newFeedback) => {
+		newFeedback.id = uuidv4();
+
+		setFeedback([newFeedback, ...feedback]);
+
+		console.log('App', feedback);
+	};
 
 	return (
-		<div className='container'>
-			<h1>{title}</h1>
-			<p>{body}</p>
-			{showComments && (
-				<div className='commnets'>
-					<h3>Comments: ({comments.length})</h3>
-					<ul>
-						{comments.map((comment, index) => (
-							<li key={index}>{comment.text}</li>
-						))}
-					</ul>
-				</div>
-			)}
-		</div>
+		<>
+			<Header />
+			<div className='container'>
+				<FeedbackForm handleAdd={addFeedback} />
+				<FeedbackStats feedback={feedback} />
+				<FeedbackList feedback={feedback} handleDelete={deleteFeedback} />
+			</div>
+		</>
 	);
 }
 
